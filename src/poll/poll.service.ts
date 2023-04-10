@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
 import { CreatePollDto } from "./dto/create-poll.dto";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+import { UpdatePollDto } from "./dto/update-poll.dto";
 
 @Injectable()
 export class PollService {
@@ -62,5 +63,25 @@ export class PollService {
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
+  }
+
+  async updatePollById(pollId: string, updatePollDto: UpdatePollDto) {
+    const updatedPoll = await this.prismaService.poll.update({
+      where: {
+        id: pollId,
+      },
+      data: {
+        question: updatePollDto.question,
+        poll_options: {
+          updateMany: updatePollDto.options.map((option) => {
+            return {
+              data: { body: option.body },
+              where: { pollId: pollId },
+            };
+          }),
+        },
+      },
+    });
+    return updatedPoll;
   }
 }

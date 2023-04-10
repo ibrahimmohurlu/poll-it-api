@@ -1,6 +1,15 @@
-import { Body, Controller, Delete, Get, Param, Post } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+} from "@nestjs/common";
 import { PollService } from "./poll.service";
 import { CreatePollDto } from "./dto/create-poll.dto";
+import { UpdatePollDto } from "./dto/update-poll.dto";
 
 @Controller("polls")
 export class PollController {
@@ -24,5 +33,10 @@ export class PollController {
   @Delete("/:id")
   deletePollById(@Param("id") pollId) {
     return this.pollService.deletePollById(pollId);
+  }
+
+  @Put("/:id")
+  updatePollById(@Param("id") pollId, @Body() updatePollDto: UpdatePollDto) {
+    return this.pollService.updatePollById(pollId, updatePollDto);
   }
 }
