@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseUUIDPipe,
   Post,
   Put,
 } from "@nestjs/common";
@@ -21,7 +22,7 @@ export class PollController {
   }
 
   @Get("/:id")
-  getPollById(@Param("id") pollId) {
+  getPollById(@Param("id", ParseUUIDPipe) pollId) {
     return this.pollService.getPollById(pollId);
   }
 
@@ -31,12 +32,15 @@ export class PollController {
   }
 
   @Delete("/:id")
-  deletePollById(@Param("id") pollId) {
+  deletePollById(@Param("id", ParseUUIDPipe) pollId) {
     return this.pollService.deletePollById(pollId);
   }
 
   @Put("/:id")
-  updatePollById(@Param("id") pollId, @Body() updatePollDto: UpdatePollDto) {
+  updatePollById(
+    @Param("id", ParseUUIDPipe) pollId,
+    @Body() updatePollDto: UpdatePollDto,
+  ) {
     return this.pollService.updatePollById(pollId, updatePollDto);
   }
 }
