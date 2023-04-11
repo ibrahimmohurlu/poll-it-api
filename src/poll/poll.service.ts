@@ -1,7 +1,7 @@
-import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
 import { CreatePollDto } from "./dto/create-poll.dto";
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+
 import { UpdatePollDto } from "./dto/update-poll.dto";
 
 @Injectable()
