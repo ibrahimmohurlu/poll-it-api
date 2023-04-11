@@ -41,28 +41,16 @@ export class PollService {
   }
 
   async deletePollById(pollId: string) {
-    try {
-      const deletedPoll = await this.prismaService.poll.delete({
-        where: {
-          id: pollId,
-        },
-        include: {
-          poll_options: true,
-        },
-      });
-      return deletedPoll;
-    } catch (e: any) {
-      if (e instanceof PrismaClientKnownRequestError) {
-        throw new HttpException(
-          `Poll with id ${pollId} not found`,
-          HttpStatus.NOT_FOUND,
-        );
-      }
-      throw new HttpException(
-        "Internal Server Error",
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
+    const deletedPoll = await this.prismaService.poll.delete({
+      where: {
+        id: pollId,
+      },
+      include: {
+        poll_options: true,
+      },
+    });
+
+    return deletedPoll;
   }
 
   async updatePollById(pollId: string, updatePollDto: UpdatePollDto) {
