@@ -22,9 +22,14 @@ export class PollService {
     });
   }
 
-  async createPoll(pollData: CreatePollDto) {
+  async createPoll(pollData: CreatePollDto, user) {
     return await this.prismaService.poll.create({
       data: {
+        user: {
+          connect: {
+            id: user.sub,
+          },
+        },
         question: pollData.question,
         poll_options: {
           create: pollData.options.map((option) => {

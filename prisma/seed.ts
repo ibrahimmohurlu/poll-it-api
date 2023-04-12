@@ -8,12 +8,14 @@ async function main() {
   const testPassword = "test";
 
   const saltOrRounds = 10;
-  const testHash = await bcrypt.hash(testPassword, saltOrRounds);
+  const salt = await bcrypt.genSalt(saltOrRounds);
+  const testHash = await bcrypt.hash(testPassword, salt);
 
   await prisma.user.create({
     data: {
       email: "test@mail.com",
       hash: testHash,
+      salt: salt,
     },
   });
   await prisma.poll.create({

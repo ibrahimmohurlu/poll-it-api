@@ -15,6 +15,7 @@ model User {
   email String @unique
   hash  String
   polls Poll[]
+  salt  String
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt

@@ -10,13 +10,13 @@ export class PrismaClientExceptionFilter extends BaseExceptionFilter {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const message = exception.meta.cause;
-
+    console.log(exception.meta);
     switch (exception.code) {
       case "P2002": {
         const status = HttpStatus.CONFLICT;
         response.status(status).json({
           statusCode: status,
-          message: message,
+          message: `Unique constraints failed on fields ${exception.meta.target}`,
         });
         break;
       }
