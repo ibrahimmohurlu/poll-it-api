@@ -3,6 +3,7 @@ import { PrismaService } from "src/prisma/prisma.service";
 import { CreatePollDto } from "./dto/create-poll.dto";
 
 import { UpdatePollDto } from "./dto/update-poll.dto";
+import { VotePollDto } from "./dto/vote-poll.dto";
 
 @Injectable()
 export class PollService {
@@ -76,5 +77,54 @@ export class PollService {
       },
     });
     return updatedPoll;
+  }
+
+  async votePollById(pollId: string, votePollDto: VotePollDto) {
+    const { option_id } = votePollDto;
+    return await this.prismaService.poll.update({
+      where: {
+        id: pollId,
+      },
+      data: {
+        poll_options: {
+          update: {
+            where: {
+              id: option_id,
+            },
+            data: {
+              vote_count: {
+                increment: 1,
+              },
+            },
+          },
+        },
+      },
+      select: {
+        poll_options: {
+          where: {
+            id: option_id,
+          },
+        },
+      },
+    });
+  }
+
+  async getResultByPollId(pollId: string) {
+    return await this.prismaService.poll.findUnique({
+      where: {
+        id: pollId,
+      },
+      select: {
+        id: true,
+        question: true,
+        poll_options: {
+          select: {
+            body: true,
+            vote_count: true,
+          },
+        },
+        created_at: true,
+      },
+    });
   }
 }
