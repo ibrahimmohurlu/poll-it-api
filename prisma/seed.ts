@@ -1,9 +1,28 @@
 import { PrismaClient } from "@prisma/client";
+import * as bcrypt from "bcrypt";
 
 const prisma = new PrismaClient();
+
 async function main() {
+  const testMail = "test@mail.com";
+  const testPassword = "test";
+
+  const saltOrRounds = 10;
+  const testHash = await bcrypt.hash(testPassword, saltOrRounds);
+
+  await prisma.user.create({
+    data: {
+      email: "test@mail.com",
+      hash: testHash,
+    },
+  });
   await prisma.poll.create({
     data: {
+      user: {
+        connect: {
+          email: testMail,
+        },
+      },
       question: "Is cats awesome?",
       poll_options: {
         create: [
@@ -19,6 +38,11 @@ async function main() {
   });
   await prisma.poll.create({
     data: {
+      user: {
+        connect: {
+          email: testMail,
+        },
+      },
       question: "Is dogs awesome?",
       poll_options: {
         create: [
