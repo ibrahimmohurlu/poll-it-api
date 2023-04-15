@@ -12,13 +12,21 @@ async function bootstrap() {
   app.useGlobalFilters(new PrismaClientExceptionFilter(httpAdapter));
 
   const config = new DocumentBuilder()
+    .addBearerAuth()
     .setTitle("Poll It API")
-    .setDescription("poll-it-api description")
+    .setDescription(
+      "API for creating and managing polls with JWT authentication. " +
+        "User can register, login, and see their profile. " +
+        "Unauthenticated users can list all the polls and results. " +
+        "Authenticated user can create,update and delete poll by poll id. " +
+        "Authenticated users can also vote for poll by id. " +
+        "Most of the endpoints require auth so before testing the api remember to login or register " +
+        "and add your access token into the Authorize button down below.",
+    )
     .setVersion("1.0")
-    .addTag("polls")
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup("api", app, document);
+  SwaggerModule.setup("/", app, document);
 
   await app.listen(3000);
 }
