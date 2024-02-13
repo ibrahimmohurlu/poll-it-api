@@ -9,10 +9,10 @@ import { Repository } from "typeorm";
 import { PollOption } from "./entities/poll-option.entity";
 import { User } from "src/users/entities/user.entity";
 import { VoteService } from "src/vote/vote.service";
+import { AuthedUser } from "src/users/authed-user.decorator";
 
 @Injectable()
 export class PollService {
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
   constructor(
     @InjectRepository(Poll)
     private pollRepository: Repository<Poll>,
@@ -32,7 +32,7 @@ export class PollService {
     });
   }
 
-  async createPoll(pollData: CreatePollDto, user) {
+  async createPoll(pollData: CreatePollDto, user: AuthedUser) {
     const { options } = pollData;
 
     const userToConnect = new User({ user_id: user.sub });
@@ -86,7 +86,11 @@ export class PollService {
     return await this.pollRepository.save(poll);
   }
 
-  async votePollById(pollId: string, user, votePollDto: VotePollDto) {
+  async votePollById(
+    pollId: string,
+    user: AuthedUser,
+    votePollDto: VotePollDto,
+  ) {
     const { option_id } = votePollDto;
     return await this.voteService.createVoteByOptionId(option_id, user.sub);
   }

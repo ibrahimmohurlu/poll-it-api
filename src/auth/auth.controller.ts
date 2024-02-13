@@ -14,6 +14,7 @@ import { AuthGuard } from "./auth.guard";
 import { SignInDto } from "./dto/sign-in.dto";
 import { SignUpDto } from "./dto/sign-up.dto";
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { AuthedUser } from "src/users/authed-user.decorator";
 
 @ApiTags("auth")
 @Controller("auth")
@@ -67,7 +68,7 @@ export class AuthController {
   @ApiBearerAuth()
   @UseGuards(AuthGuard)
   @Get("/profile")
-  getProfile(@Request() req) {
-    return req.user;
+  getProfile(@AuthedUser() user: AuthedUser) {
+    return user;
   }
 }

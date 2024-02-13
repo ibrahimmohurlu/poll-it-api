@@ -28,6 +28,7 @@ import {
   ApiTags,
 } from "@nestjs/swagger";
 import { Response } from "express";
+import { AuthedUser } from "src/users/authed-user.decorator";
 
 @ApiTags("polls")
 @Controller("polls")
@@ -61,8 +62,11 @@ export class PollController {
   @ApiBearerAuth()
   @UseGuards(AuthGuard)
   @Post("/")
-  async createPoll(@Body() createPollDto: CreatePollDto, @Req() req) {
-    return await this.pollService.createPoll(createPollDto, req.user);
+  async createPoll(
+    @Body() createPollDto: CreatePollDto,
+    @AuthedUser() user: AuthedUser,
+  ) {
+    return await this.pollService.createPoll(createPollDto, user);
   }
 
   @ApiOperation({ summary: "Delete the poll by id. Auth required." })
@@ -137,9 +141,9 @@ export class PollController {
   votePollById(
     @Param("id", ParseUUIDPipe) pollId: string,
     @Body() votePollDto: VotePollDto,
-    @Req() req,
+    @AuthedUser() user: AuthedUser,
   ) {
-    return this.pollService.votePollById(pollId, req.user, votePollDto);
+    return this.pollService.votePollById(pollId, user, votePollDto);
   }
 
   @ApiOperation({ summary: "Get the result of the poll by id." })
