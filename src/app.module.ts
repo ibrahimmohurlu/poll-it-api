@@ -3,24 +3,20 @@ import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { PollModule } from "./poll/poll.module";
 import { AuthModule } from "./auth/auth.module";
-import { UsersModule } from "./users/users.module";
+import { UserModule } from "./users/user.module";
 import { TypeOrmModule } from "@nestjs/typeorm";
+import { VoteModule } from "./vote/vote.module";
+import { DatabaseModule } from "./database/database.module";
+import { ConfigModule, ConfigService } from "@nestjs/config";
 
 @Module({
   imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
+    DatabaseModule,
     PollModule,
     AuthModule,
-    UsersModule,
-    TypeOrmModule.forRoot({
-      type: "postgres",
-      host: "poll-it-api-db",
-      port: 5432,
-      username: "postgres",
-      password: "postgres",
-      //database: "poll-it-api",
-      entities: [],
-      synchronize: true,
-    }),
+    UserModule,
+    VoteModule,
   ],
   controllers: [AppController],
   providers: [AppService],

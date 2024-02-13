@@ -7,6 +7,7 @@ import {
   UseGuards,
   Request,
   Get,
+  BadRequestException,
 } from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import { AuthGuard } from "./auth.guard";
@@ -55,8 +56,9 @@ export class AuthController {
   })
   @HttpCode(HttpStatus.CREATED)
   @Post("/register")
-  signUp(@Body() signUpDto: SignUpDto) {
-    return this.authService.signUp(signUpDto);
+  async signUp(@Body() signUpDto: SignUpDto) {
+    const user = await this.authService.signUp(signUpDto);
+    return { message: `user with id:${user.user_id} created.` };
   }
 
   @ApiOperation({
@@ -64,7 +66,7 @@ export class AuthController {
   })
   @ApiBearerAuth()
   @UseGuards(AuthGuard)
-  @Get("profile")
+  @Get("/profile")
   getProfile(@Request() req) {
     return req.user;
   }

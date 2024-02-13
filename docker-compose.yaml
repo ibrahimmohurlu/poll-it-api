@@ -3,14 +3,14 @@ services:
   db:
     image: postgres:latest
     restart: always
-    container_name: poll-it-api-db
+    container_name: ${DB_HOST}
     environment:
-      - POSTGRES_USER=admin
-      - POSTGRES_PASSWORD=admin
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     volumes:
       - "./pgdata:/var/lib/postgresql/data"
     ports:
-      - "5432:5432"
+      - ${DB_PORT}:5432
   app:
     build:
       context: .

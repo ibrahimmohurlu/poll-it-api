@@ -1,28 +1,26 @@
 import { Type } from "class-transformer";
 import {
-  IsNotEmpty,
   IsArray,
-  IsString,
   ArrayNotEmpty,
   ValidateNested,
   ArrayMinSize,
+  ValidateIf,
+  IsNotEmpty,
+  IsString,
 } from "class-validator";
+import { UpdatePollOptionDto } from "./update-poll-option.dto";
 
 export class UpdatePollDto {
+  @ValidateIf((o) => o.title !== undefined)
   @IsNotEmpty()
   @IsString()
-  question: string;
+  title?: string | undefined;
 
+  @ValidateIf((o) => o.options !== undefined)
   @IsArray()
   @ValidateNested({ each: true })
   @ArrayNotEmpty()
   @ArrayMinSize(2)
-  @Type(() => Option)
-  options: Option[];
-}
-
-export class Option {
-  @IsString({})
-  @IsNotEmpty()
-  body: string;
+  @Type(() => UpdatePollOptionDto)
+  options?: UpdatePollOptionDto[] | undefined;
 }

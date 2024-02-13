@@ -7,22 +7,17 @@ import {
   ValidateNested,
   ArrayMinSize,
 } from "class-validator";
+import CreatePollOptionDto from "./create-poll-option.dto";
 
 export class CreatePollDto {
   @IsNotEmpty()
   @IsString()
-  question: string;
+  title: string;
 
   @IsArray()
   @ValidateNested({ each: true })
   @ArrayNotEmpty()
   @ArrayMinSize(2)
-  @Type(() => Option)
-  options: Option[];
-}
-
-export class Option {
-  @IsString({})
-  @IsNotEmpty()
-  body: string;
+  @Type(() => CreatePollOptionDto)
+  options: CreatePollOptionDto[];
 }

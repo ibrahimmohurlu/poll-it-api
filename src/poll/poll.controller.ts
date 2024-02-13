@@ -8,7 +8,12 @@ import {
   Post,
   Put,
   UseGuards,
-  Request,
+  Query,
+  Req,
+  ParseIntPipe,
+  DefaultValuePipe,
+  Res,
+  BadRequestException,
 } from "@nestjs/common";
 import { PollService } from "./poll.service";
 import { CreatePollDto } from "./dto/create-poll.dto";
@@ -22,6 +27,7 @@ import {
   ApiParam,
   ApiTags,
 } from "@nestjs/swagger";
+import { Response } from "express";
 
 @ApiTags("polls")
 @Controller("polls")
@@ -30,8 +36,13 @@ export class PollController {
 
   @Get("/")
   @ApiOperation({ summary: "Returns all the polls." })
-  getAllPolls() {
-    return this.pollService.getAllPolls();
+  async getAllPolls(
+    @Query("take", new DefaultValuePipe(30), ParseIntPipe) take,
+    @Query("skip", new DefaultValuePipe(0), ParseIntPipe) skip,
+    @Res() res: Response,
+  ) {
+    const polls = await this.pollService.getAllPolls();
+    return res.status(200).json({ data: polls, take, skip });
   }
 
   @ApiOperation({ summary: "Get the poll by id." })
@@ -50,8 +61,8 @@ export class PollController {
   @ApiBearerAuth()
   @UseGuards(AuthGuard)
   @Post("/")
-  createPoll(@Body() createPollDto: CreatePollDto, @Request() req) {
-    return this.pollService.createPoll(createPollDto, req.user);
+  async createPoll(@Body() createPollDto: CreatePollDto, @Req() req) {
+    return await this.pollService.createPoll(createPollDto, req.user);
   }
 
   @ApiOperation({ summary: "Delete the poll by id. Auth required." })
@@ -62,8 +73,19 @@ export class PollController {
   })
   @UseGuards(AuthGuard)
   @Delete("/:id")
-  deletePollById(@Param("id", ParseUUIDPipe) pollId) {
-    return this.pollService.deletePollById(pollId);
+  async deletePollById(
+    @Param("id", ParseUUIDPipe) pollId,
+    @Res() res: Response,
+  ) {
+    const result = await this.pollService.deletePollById(pollId);
+    if (result.affected < 1) {
+      throw new BadRequestException({
+        path: `/polls/${pollId}`,
+        timestamp: new Date().toISOString(),
+        message: `poll with id:${pollId} not found.`,
+      });
+    }
+    return res.status(204).end();
   }
 
   @ApiOperation({ summary: "Update the poll by id. Auth required." })
@@ -75,11 +97,11 @@ export class PollController {
   @ApiBody({ type: [UpdatePollDto] })
   @UseGuards(AuthGuard)
   @Put("/:id")
-  updatePollById(
+  async updatePollById(
     @Param("id", ParseUUIDPipe) pollId: string,
     @Body() updatePollDto: UpdatePollDto,
   ) {
-    return this.pollService.updatePollById(pollId, updatePollDto);
+    return await this.pollService.updatePollById(pollId, updatePollDto);
   }
 
   @ApiOperation({
@@ -115,8 +137,9 @@ export class PollController {
   votePollById(
     @Param("id", ParseUUIDPipe) pollId: string,
     @Body() votePollDto: VotePollDto,
+    @Req() req,
   ) {
-    return this.pollService.votePollById(pollId, votePollDto);
+    return this.pollService.votePollById(pollId, req.user, votePollDto);
   }
 
   @ApiOperation({ summary: "Get the result of the poll by id." })
@@ -127,7 +150,7 @@ export class PollController {
     example: "a161381c-2058-45f5-ae34-b9648e018400",
   })
   @Get("/:id/result")
-  getResultByPollId(@Param("id", ParseUUIDPipe) pollId: string) {
-    return this.pollService.getResultByPollId(pollId);
+  async getResultByPollId(@Param("id", ParseUUIDPipe) pollId: string) {
+    return await this.pollService.getResultByPollId(pollId);
   }
 }
