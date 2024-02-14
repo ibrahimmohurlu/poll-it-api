@@ -4,10 +4,9 @@ import { AppService } from "./app.service";
 import { PollModule } from "./poll/poll.module";
 import { AuthModule } from "./auth/auth.module";
 import { UserModule } from "./users/user.module";
-import { TypeOrmModule } from "@nestjs/typeorm";
 import { VoteModule } from "./vote/vote.module";
 import { DatabaseModule } from "./database/database.module";
-import { ConfigModule, ConfigService } from "@nestjs/config";
+import { ConfigModule } from "@nestjs/config";
 
 @Module({
   imports: [
