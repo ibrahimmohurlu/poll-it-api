@@ -5,9 +5,7 @@ import {
   Post,
   Body,
   UseGuards,
-  Request,
   Get,
-  BadRequestException,
 } from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import { AuthGuard } from "./auth.guard";
@@ -17,7 +15,7 @@ import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { AuthedUser } from "src/users/authed-user.decorator";
 
 @ApiTags("auth")
-@Controller("auth")
+@Controller({ path: "auth", version: "1" })
 export class AuthController {
   constructor(private authService: AuthService) {}
 

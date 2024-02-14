@@ -1,6 +1,6 @@
 import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
-import { ValidationPipe } from "@nestjs/common";
+import { ValidationPipe, VersioningType } from "@nestjs/common";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { QueryFailedExceptionFilter } from "./typeorm-exception.filter";
 
@@ -10,7 +10,8 @@ async function bootstrap() {
 
   //const { httpAdapter } = app.get(HttpAdapterHost);
   app.useGlobalFilters(new QueryFailedExceptionFilter());
-
+  app.enableVersioning({ type: VersioningType.URI });
+  app.setGlobalPrefix("api");
   const config = new DocumentBuilder()
     .addBearerAuth()
     .setTitle("Poll It API")

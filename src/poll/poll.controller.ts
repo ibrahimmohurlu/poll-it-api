@@ -9,7 +9,6 @@ import {
   Put,
   UseGuards,
   Query,
-  Req,
   ParseIntPipe,
   DefaultValuePipe,
   Res,
@@ -31,7 +30,7 @@ import { Response } from "express";
 import { AuthedUser } from "src/users/authed-user.decorator";
 
 @ApiTags("polls")
-@Controller("polls")
+@Controller({ path: "polls", version: "1" })
 export class PollController {
   constructor(private pollService: PollService) {}
 
